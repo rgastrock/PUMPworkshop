@@ -10,14 +10,14 @@
  2/2
  2*2
  
- #But what if you want to save the answer?  You need to make a “variable”, there is a special way to do that in R
+ #But what if you want to save the answer?  You need to make a ?variable?, there is a special way to do that in R
  
  X <- 2+2      # X is getting '2 + 2' 
  # now if you look in the environment, you will see it listed there
  # Maybe you have more than 1 number you want to store in a variable
  
  X <- c(1,2,3,4)  # The 'c' combines all the numbers in the bracket into the variable X
- #notice that because we used the same letter for our variable we’ve actually overwritten the previous value. 
+ #notice that because we used the same letter for our variable we?ve actually overwritten the previous value. 
  X <- 2+2
  Y <- c(1,2,3,4)
  #When you use the 'c' command you are creating a special variable, that is called a vector as it contains multiple elements of the same type.  
@@ -40,7 +40,7 @@
  data<-read.csv("data/PUMPdata.csv", header = TRUE)
  # we are assigning the data to the variable 'data'.
  # we are finding the spreadsheet in the data folder and its called PUMPdata.csv
- # we know that this file has column names, and we want to keep those as the names of the columns so we include the argument “header = TRUE”
+ # we know that this file has column names, and we want to keep those as the names of the columns so we include the argument ?header = TRUE?
  
  
  #its always good to look at your data and make sure it looks right
@@ -73,7 +73,7 @@
  
  hist(data$PreVocab[data$Gender == 2], col = "Blue", xlim = c(0,20), ylim = c(0,10), main = "PreVocab Scores", xlab = "Score")
  #Here we plotted the prevocab scores for the males. 
- #We are telling the histogram function to use blue for the bars, and set the x and y lim to 0,20 and 0,10 respectively.  While adding a title “PreVocab Scores” and a label to the X-axis “Scores”
+ #We are telling the histogram function to use blue for the bars, and set the x and y lim to 0,20 and 0,10 respectively.  While adding a title ?PreVocab Scores? and a label to the X-axis ?Scores?
  
  hist(data$PreVocab[data$Gender == 1], add = TRUE, col = "Green")
  #Now we added the prevocab scores for the females in green.  The 'add = TRUE' argument ensures this histogram is added to the previous plot. 
@@ -113,10 +113,34 @@
  
  #if you want to save the plot you have a few options.
  #the easiest, is to save it from the plot window within R. But sometimes you make a lot of plots and want to save them as you go, so you can use this simple code.
+ #Note, however, that this needs to go before you make the plot
+ png(filename = "fig/Vocab Scores.png", width = 500, height = 500, units = "px", bg = 'transparent')
+ plot(x = c(1,1,2,2), y = c(PreVMf,PreVMm, PostVMf,PostVMm), type = "p", col = c("Green","Blue","Green","Blue" ), main = "Vocab Scores", xlab = "Time of Test", ylab = "Average Score",ylim= c(10,20), xlim = c(.5,2.5), axes = FALSE)
+ #Here we plot each of the four averages we just calculated and we color coded them based on their gender.  
+ #The 'axes = FALSE' argument removes the X & Y axis so we can make them ourselves. 
+ axis(2, at = c(10, 12, 14, 16, 18,20), cex.axis = 1.25,
+      las = 2)
+ axis(1, at = c(1, 2), labels = c("Pre", "Post"), cex.axis = 1.25)
+ #Then we added some nice axes labels. 
  
  
- png(filename = "figures/Vocab Scores.png", width = 500, height = 500, units = "px", bg = 'transparent')
+ #we added a legend to make it easier to tell the colors apart
+ legend(
+    .5,
+    18,
+    legend = c("females", "males"),
+    col = c("Green","Blue"),
+    lty = c(1),
+    lwd = c(2),
+    bty = 'n',
+    cex = 1.25
+ )
  
+ 
+ 
+ #We could even add lines to connect the pre and post vocab scores for each gender
+ lines(x = c(1,2), y = c(PreVMf,PostVMf), col = "Green")
+ lines(x = c(1,2), y = c(PreVMm,PostVMm), col = "Blue")
  #the above line needs to be run before any plotting code is run.  This sets up the empty file for R to write the plot to. 
  dev.off()
  #Then you run this code to tell R that you are done plotting and it can close the file. 
@@ -128,6 +152,6 @@
  
  #Now we can save this new data.frame to a csv file for future use. 
  write.csv(datanew, file = "data/Vocab Scores.csv", quote = FALSE, row.names = FALSE)
- #The quote = FALSE and row.names = FALSE arguments are for formatting the data.frame so it looks clean when it’s exported to a csv.
+ #The quote = FALSE and row.names = FALSE arguments are for formatting the data.frame so it looks clean when it?s exported to a csv.
  #by adding the data/ before the filename, we are able to put that new csv file right into our data folder. 
  
