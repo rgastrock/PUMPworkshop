@@ -67,8 +67,11 @@
  PreVMf<- mean(data$PreVocab[data$Gender == 1], na.rm = TRUE)
  PreVMf # we need to call this again to actually see the value since we assigned it to a mean. 
  print(PreVMm<- mean(data$PreVocab[data$Gender == 2], na.rm = TRUE))
- #Here we just wrapped the function 'print' around our mean function, to get R to show us the answer, while also storing in the variable. 
  
+ #Here we just wrapped the function 'print' around our mean function, to get R to show us the answer, while also storing in the variable. 
+ #Its nice to see all the data, but sometimes seeing the group averages can be very helpful. Previously we learned how to get the means of specific groups, so lets do that again. 
+ PostVMf<- mean(data$PostVocab[data$Gender == 1], na.rm = TRUE)
+ PostVMm<- mean(data$PostVocab[data$Gender == 2], na.rm = TRUE)
  #But a mean is not good enough! We want to see the data. R is great at plotting and you can make lots of nice graphs really easy. 
  
  hist(data$PreVocab[data$Gender == 2], col = "Blue", xlim = c(0,20), ylim = c(0,10), main = "PreVocab Scores", xlab = "Score")
@@ -78,10 +81,6 @@
  hist(data$PreVocab[data$Gender == 1], add = TRUE, col = "Green")
  #Now we added the prevocab scores for the females in green.  The 'add = TRUE' argument ensures this histogram is added to the previous plot. 
  
- 
- #Its nice to see all the data, but sometimes seeing the group averages can be very helpful. Previously we learned how to get the means of specific groups, so lets do that again. 
- PostVMf<- mean(data$PostVocab[data$Gender == 1], na.rm = TRUE)
- PostVMm<- mean(data$PostVocab[data$Gender == 2], na.rm = TRUE)
  
  plot(x = c(1,1,2,2), y = c(PreVMf,PreVMm, PostVMf,PostVMm), type = "p", col = c("Green","Blue","Green","Blue" ), main = "Vocab Scores", xlab = "Time of Test", ylab = "Average Score",ylim= c(10,20), xlim = c(.5,2.5), axes = FALSE)
  #Here we plot each of the four averages we just calculated and we color coded them based on their gender.  
