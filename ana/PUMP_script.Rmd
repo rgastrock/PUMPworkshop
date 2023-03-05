@@ -1,5 +1,7 @@
 ---
 title: "Intro to R: PUMP"
+subtitle: "Based on an Earlier R script by Raphael Gastrock and Jennifer Ruttle"
+author: "Michael Truong"
 output: html_document
 ---
 
