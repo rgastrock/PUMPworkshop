@@ -1,4 +1,522 @@
 ---
-title: ""
+title: "Intro to R: PUMP"
 output: html_document
 ---
+
+# R Studio and its GUI
+
+What are we looking at? What is the console, script, environment & plot window? What does '>' mean in the console?
+ 
+# R as a Calculator
+
+R is a super powerful calculator. Using these operators, you can do almost anything you would want:
+
+```{r}
+2 + 2
+```
+
+```{r}
+2 - 2
+```
+
+```{r}
+2/2
+```
+
+```{r}
+2*2
+```
+
+# Variables
+
+What if you want to save the answer? Make a variable? Here's one way:
+
+```{r}
+X <- 2+2
+```
+
+Here's how you can show what it is:
+
+```{r}
+X
+```
+
+```{r}
+(X)
+```
+
+A shorter way of both saving and showing the result:
+```{r}
+(X <- 2+2)
+```
+
+If you look in the environment, you'll see it listed there now. This is generally used when you want to save some information to be used later.
+
+# Vectors: saving more than one value
+
+If you want to save more than one number, one way is to use `c`:
+
+```{r}
+X <- c(1,2,3,4)
+```
+ 
+Notice that because we re-used the same variable name as before that we've actually over-written the previous value:
+
+```{r}
+X
+```
+
+To compare the two, let's re-make these variables, but with different names:
+
+```{r}
+(X1 <- 2 + 2)
+(X2 <- c(1,2,3,4))
+```
+Notice that if we do not include `c()`, then we get an error:
+
+```{r, error = TRUE}
+X2 <- (1,2,3,4)
+```
+This is because you can only assign single `objects` to variables and `(1,2,3,4)` consists of 4 separate objects. We can combine--concatenate--the 4 separate objects into one object using `c()`, which creates something called a `vector`.
+
+```{r}
+(X2 <- c(1,2,3,4))
+is.vector(X2)
+```
+
+# Lists: Saving Multiple Types
+
+Let's say we want to have both numbers and characters:
+
+```{r}
+Z <- c(1:4, "A", "B")
+```
+
+What happens?
+
+```{r}
+Z
+```
+Now all the values have `"..."` around them, which means that they're all characters:
+
+```{r}
+is.character(Z)
+str(Z)
+```
+Compare this with X2 from before:
+
+```{r}
+str(X2)
+```
+X2 is a numeric vector. What happened???
+
+Generally, when you concatenate like this R tries to make everything the same `type`. Some basic types are `characters` and `numbers`. All numbers can be represented as characters, but not all characters can be represented as numbers. So R saves the type as a character to preserve as much information as possible.
+
+One way to still keep both types into one variable is to split the vector into two parts--two lists.
+
+```{r}
+(Z <- list(c(1, 2, 3, 4), c("A", "B")))
+```
+Now, `Z` is a list instead of vectors. Specifically, `Z` is a list of two vectors. The first vector holds our numbers and the second holds the letters. 
+
+We can get the first vector like this:
+
+```{r}
+Z[1]
+```
+
+And the second like so:
+
+```{r}
+Z[2]
+```
+
+(For the more advanced, note that this doesn't actually get you the vector itself but an element of a list. If you want to get the vector the way we did before do this)
+
+```{r}
+Z[[1]]
+```
+This 'unlists' the element of the list, which conveniently also has a function for it:
+
+```{r}
+unlist(Z)
+```
+
+Notice that this makes everything into characters again. But this keeps the types the way we want:
+
+```{r}
+unlist(Z[1])
+
+unlist(Z[2])
+```
+
+## Naming Elements of a List
+
+We can even name the elements of our list to make it easier to get
+
+```{r}
+(Z <- list(numbers = c(1,2,3,4), letters = c("A", "B")))
+```
+You can get the values like this now:
+
+```{r}
+Z$numbers
+```
+```{r}
+Z$letters
+```
+Here are some other ways:
+
+```{r}
+Z["numbers"]
+```
+```{r}
+Z[["numbers"]]
+```
+
+Note the importance of `[[...]]` versus `[]`
+
+# A List of Lists: Dataframes
+
+Let's say we want to save the information in more than one list because the information in one list is related to another. For example, one list refers to letter grades and the other list refers to the GPA that the letter grade corresponds to:
+
+```{r}
+grade <- c("A", "B", "C", "D")
+```
+
+```{r}
+gpa <- c(8, 6, 4, 2)
+```
+
+Is there an easy way to save everything as one variable? One way is to use something called a 'data frame' which makes a table of your information. 
+
+```{r}
+(dataframe <- data.frame(grade = c("A", "B", "C", "D"),
+                         gpa = c(8, 6, 4, 2)))
+```
+
+Now everything is easy to see! Importantly, the way we made the data frame is column by column. We made the  `grade` column and we entered its row values of A to D; then we noted the `gpa` column, which had the corresponding GPAs of 8 to 2.
+
+Note that under the hood, every data frame is a list of lists. In `dataframe`, `grade` is a list that has the values of A to D; and `gpa` is a list that has the corresponding GPAs of 8 to 2. 
+
+Similar to the list with names, we can easily retrieve individual values:
+
+```{r}
+dataframe$grade
+```
+```{r}
+dataframe$gpa
+```
+
+As well, like so:
+
+```{r}
+dataframe["grade"]
+```
+
+```{r}
+dataframe[["grade"]]
+```
+
+# Loading data
+
+If we had to make the data frame manually each time it'd be a lot of work! Fortunately, we can just load the data in from a spreadsheet file. Usually, you want something that's save as a `.csv`. 
+
+And be [careful]([https://www.theverge.com/2020/8/6/21355674/human-genes-rename-microsoft-excel-misreading-dates])  [around people who use excel files](https://www.nature.com/articles/d41586-021-02211-4).  
+
+We use the `read.csv` function to do this and we set `header = TRUE` because the file has column names at the top on its head, the 'header'.
+
+```{r}
+dataL <- read.csv("../data/PUMPdata.csv")
+```
+
+We won't get into it here, but note that `read.csv` behaves differently between the R notebook and the console. This has something to do with its ['working directory'](https://bookdown.org/yihui/rmarkdown-cookbook/working-directory.html). 
+
+## Help Files
+
+See the documentation of `read.csv` for more information on how that functions works.
+
+```{r}
+help("read.csv")
+```
+
+Another way:
+
+```{r}
+?read.csv
+```
+
+## Did it load properly?
+
+It's always good to look at your data and make sure it looks right
+
+```{r}
+head(dataL)
+```
+Seems okay
+
+```{r}
+str(dataL)
+```
+Everything is an integer and there's 7 columns, 7 variables. Each column has 24 values, 24 observations (24 obs). 
+
+But wait! We probably want to make the Student ID, Group and Genders as a `factor` instead... It doesn't make much sense to add up student IDs after all. 
+
+We can do this to convert the column into a factor:
+
+```{r}
+as.factor(dataL$Student.ID)
+```
+
+And this to save the conversion back into the column in the data frame
+
+```{r}
+dataL$Student.ID <- as.factor(dataL$Student.ID)
+```
+
+But be careful that you don't save it into the dataframe itself or else you'll wipe out your data!
+
+```{r, eval=FALSE}
+dataL <- as.factor(dataL$Student.ID)
+
+dataL
+```
+
+I have my Student ID as a factor, but everything else is gone!
+
+Luckily, you can just press the triangle to the left of the play button to run everything up to that chunk and restart.
+
+Now let's do it for everything else:
+
+```{r}
+dataL$Group <- as.factor(dataL$Group)
+dataL$Gender <- as.factor(dataL$Gender)
+```
+
+Did it work?
+
+```{r}
+str(dataL)
+```
+
+Looks like it. Now let's do some data analysis!
+
+## Descriptive Statistics
+
+What if we want the mean of people's pre-vocabulary scores?
+
+We can get the mean using `mean()`:
+
+```{r}
+mean(dataL$PreVocab)
+```
+
+If there's some blank values in the `.csv` file the data frame usually (but not always!) records it as `NA`. If there's a NA value, `mean()` will get you the wrong value.
+
+```{r, error =TRUE}
+mean(c(1,2,3,NA))
+```
+
+You can fix this setting `na.rm = TRUE`:
+
+```{r}
+mean(c(1,2,3,NA), na.rm = TRUE)
+```
+
+What if you only want the mean for a specific gender? For example, Gender of 1?
+
+First, let's get parts of the data frame where people have a gender of 1:
+
+```{r}
+dataL[dataL$Gender == 1, ]
+```
+
+When dealing with a dataframe you can select specific values of the table by its row and columns `dataframe[ROW, COLUMN]`. Here we want rows where Gender == 1:
+
+```{r}
+dataL$Gender == 1
+```
+TRUE means that, that row has Gender == 1, FALSE means otherwise. So then we use this series of TRUE and FALSE values to get what we want
+
+```{r}
+dataL[dataL$Gender == 1, ]
+```
+
+Now we want a specific column, so we can do this:
+
+```{r}
+dataL[dataL$Gender == 1, "PreVocab"]
+```
+
+An extra detail we don't discuss here is that this won't work:
+
+```{r, error = TRUE}
+dataL[dataL$Gender == 1, PreVocab]
+```
+
+Neither does this:
+
+```{r, error=TRUE}
+dataL[Gender == 1, "PreVocab"]
+```
+
+Now, let's get back to the mean:
+
+```{r}
+mean(dataL[dataL$Gender == 1, "PreVocab"], na.rm = TRUE)
+```
+
+What about for the gender == 2?
+
+```{r}
+mean(dataL[dataL$Gender == 2, "PreVocab"], na.rm = TRUE)
+```
+
+Now, let's try to make a pretty picture:
+
+```{r}
+hist(dataL[dataL$Gender == 2, "PreVocab"])
+```
+
+That's gnarly, let's clean it up a bit.
+
+First, color:
+
+```{r}
+hist(dataL[dataL$Gender == 2, "PreVocab"],
+     col = "Blue")
+```
+ 
+A title:
+
+```{r}
+hist(dataL[dataL$Gender == 2, "PreVocab"],
+     col = "Blue",
+     main = "PreVocab Scores")
+```
+A new x-axis label
+
+```{r}
+hist(dataL[dataL$Gender == 2, "PreVocab"],
+     col = "Blue",
+     main = "PreVocab Scores",
+     xlab = "Score")
+```
+
+And wider limits for the x and y axis:
+
+```{r}
+hist(
+  dataL$PreVocab[dataL$Gender == 2],
+  col = "Blue",
+  xlim = c(0, 20),
+  ylim = c(0, 10),
+  main = "PreVocab Scores",
+  xlab = "Score"
+)
+```
+
+Now for Gender == 1
+
+```{r}
+hist(
+  dataL$PreVocab[dataL$Gender == 1],
+  col = "Green",
+  xlim = c(0, 20),
+  ylim = c(0, 10),
+  main = "PreVocab Scores",
+  xlab = "Score"
+)
+```
+
+Now let's combine the two:
+
+```{r}
+hist(
+  dataL$PreVocab[dataL$Gender == 2],
+  col = "Blue",
+  xlim = c(0, 20),
+  ylim = c(0, 10),
+  main = "PreVocab Scores",
+  xlab = "Score"
+)
+
+hist(
+  dataL$PreVocab[dataL$Gender == 1],,
+  add = TRUE,
+  col = "Green"
+)
+```
+
+Seems about alright, but it's not that pretty... Now-a-days most people make graphs using `ggplot2`, but we won't talk about that here. Here's a sneak-peek of what that would look like
+
+```{r, error = TRUE}
+library(ggplot2)
+
+ggplot(dataL, aes(x = PreVocab, fill = Gender)) +
+  geom_histogram(bins = 5, alpha = .7, position = "identity") +
+  coord_cartesian(xlim = c(0, 20), ylim = c(0,10)) + 
+  theme_bw()
+```
+
+And for a more sophisticated example
+
+```{r, error = TRUE, fig.width = 6, fig.height=7, warning = FALSE, message= FALSE}
+library(GGally)
+ggpairs(subset(dataL, select=-c(Student.ID)), mapping = aes(color = Gender,
+                                                            alpha = .5),
+        progress = FALSE) + 
+  theme_bw()
+```
+
+## Saving Plots
+
+Let's say we want to save the plot, what do??? Easiest way is to use the R-Studio Viewer or to right-click the image and save. 
+
+But here's a more manual way:
+
+We re-run the code for the graph, but we add something extra before and after the code:
+
+```{r}
+# Start a png file to add a plot
+png(filename = "../fig/PreVocabScores.png",
+    width = 500, height = 500,
+    units = "px", # px for pixels
+    bg = 'transparent')
+
+hist(
+  dataL$PreVocab[dataL$Gender == 2],
+  col = "Blue",
+  xlim = c(0, 20),
+  ylim = c(0, 10),
+  main = "PreVocab Scores",
+  xlab = "Score"
+)
+
+hist(
+  dataL$PreVocab[dataL$Gender == 1],,
+  add = TRUE,
+  col = "Green"
+)
+
+dev.off() # Say that we're done with the file
+```
+
+## Other Things
+
+What if we want to remove column 1 for some reason?
+
+We can do this:
+
+```{r}
+dataL[,c(-1)]
+```
+
+What about saving it as a new file?
+
+```{r}
+write.csv(dataL[, c(-1)], file = "../data/NewFileWithoutColumn1.csv",
+          quote = FALSE, row.names = FALSE)
+```
+
+`quote = FALSE` and `row.names = FALSE` makes things cleaner when it's exported to a csv.
