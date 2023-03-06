@@ -8,7 +8,13 @@ output: html_document
 # R Studio and its GUI
 
 What are we looking at? What is the console, script, environment & plot window? What does '>' mean in the console?
- 
+
+## R-Markdown, R scripts and this tutorial
+
+For the purposes of this tutorial, we'll be using R-Markdown to make it easy to see what's going on. If you want to make a report, you'll also want to use R-Markdown in general. R-Markdown is a kind of 'literate programming' style whose essence is widely used in pedagogical settings, in nearly every statistics textbook that uses R.
+
+However, R-Markdown also masks what's going on underneath and if you're running something very complicated you'll want to mix-in the use of R scripts. Although R scripts are also simpler to interact with initially, this tutorial intends to focus on the bare-bones aspects of R and intentionally hides the underpart. R Markdown also makes it easier to narrate what each part of the code does and how changing the code modifies the results.
+
 # R as a Calculator
 
 R is a super powerful calculator. Using these operators, you can do almost anything you would want:
@@ -29,7 +35,7 @@ R is a super powerful calculator. Using these operators, you can do almost anyth
 2*2
 ```
 
-# Variables
+# Variables: How to save information
 
 What if you want to save the answer? Make a variable? Here's one way:
 
@@ -86,7 +92,7 @@ This is because you can only assign single `objects` to variables and `(1,2,3,4)
 is.vector(X2)
 ```
 
-# Lists: Saving Multiple Types
+# Lists: How to Save Multiple Types
 
 Let's say we want to have both numbers and characters:
 
@@ -152,7 +158,7 @@ unlist(Z[1])
 unlist(Z[2])
 ```
 
-## Naming Elements of a List
+## How to access parts of a list more easily
 
 We can even name the elements of our list to make it easier to get
 
@@ -220,7 +226,7 @@ dataframe["grade"]
 dataframe[["grade"]]
 ```
 
-# Loading data
+# How to analyze data
 
 If we had to make the data frame manually each time it'd be a lot of work! Fortunately, we can just load the data in from a spreadsheet file. Usually, you want something that's save as a `.csv`. 
 
@@ -234,12 +240,12 @@ dataL <- read.csv("../data/PUMPdata.csv")
 
 We won't get into it here, but note that `read.csv` behaves differently between the R notebook and the console. This has something to do with its ['working directory'](https://bookdown.org/yihui/rmarkdown-cookbook/working-directory.html). 
 
-## Help Files
+## How to get help
 
 See the documentation of `read.csv` for more information on how that functions works.
 
 ```{r}
-help("read.csv")
+help("read.csv") # Raphael starts here
 ```
 
 Another way:
@@ -248,7 +254,7 @@ Another way:
 ?read.csv
 ```
 
-## Did it load properly?
+## How to check if your data loaded properly
 
 It's always good to look at your data and make sure it looks right
 
@@ -303,7 +309,7 @@ str(dataL)
 
 Looks like it. Now let's do some data analysis!
 
-## Descriptive Statistics
+## How to get Descriptive Statistics
 
 What if we want the mean of people's pre-vocabulary scores?
 
@@ -324,6 +330,8 @@ You can fix this setting `na.rm = TRUE`:
 ```{r}
 mean(c(1,2,3,NA), na.rm = TRUE)
 ```
+
+### How to select particular values and compute their mean
 
 What if you only want the mean for a specific gender? For example, Gender of 1?
 
@@ -373,6 +381,7 @@ What about for the gender == 2?
 ```{r}
 mean(dataL[dataL$Gender == 2, "PreVocab"], na.rm = TRUE)
 ```
+### How to make a histogram
 
 Now, let's try to make a pretty picture:
 
@@ -396,6 +405,7 @@ hist(dataL[dataL$Gender == 2, "PreVocab"],
      col = "Blue",
      main = "PreVocab Scores")
 ```
+
 A new x-axis label
 
 ```{r}
@@ -444,13 +454,212 @@ hist(
 )
 
 hist(
-  dataL$PreVocab[dataL$Gender == 1],,
+  dataL$PreVocab[dataL$Gender == 1],
   add = TRUE,
   col = "Green"
 )
 ```
 
-Seems about alright, but it's not that pretty... Now-a-days most people make graphs using `ggplot2`, but we won't talk about that here. Here's a sneak-peek of what that would look like
+Seems about alright, but it's not that pretty... See the appendix for what most people do with modern R. 
+
+
+### How to Make a Plot of Means
+
+First, let's get the means for each vocabulary score for each gender in our data. 
+
+```{r}
+PreVM_f <- mean(dataL[dataL$Gender == 1, "PreVocab"])
+PreVM_m <- mean(dataL[dataL$Gender == 2, "PreVocab"])
+
+PostVM_f <- mean(dataL[dataL$Gender == 1, "PostVocab"])
+PostVM_m <- mean(dataL[dataL$Gender == 2, "PostVocab"])
+```
+
+Now let's build our plot step-by-step like before. 
+
+First, let's get the points, colors and their labels:
+
+```{r}
+plot(
+  x = c(1, 1, 2, 2),
+  y = c(PreVM_f, PreVM_m, PostVM_f, PostVM_m),
+  type = "p",
+  col = c("Green", "Blue", "Green", "Blue"),
+  main = "Vocab Scores",
+  xlab = "Time of Test",
+  ylab = "Average Score",
+  ylim = c(10, 20),
+  xlim = c(.5, 2.5),
+  axes = FALSE
+)
+```
+
+Now let's make the axes our way
+
+```{r}
+plot(
+  x = c(1, 1, 2, 2),
+  y = c(PreVM_f, PreVM_m, PostVM_f, PostVM_m),
+  type = "p",
+  col = c("Green", "Blue", "Green", "Blue"),
+  main = "Vocab Scores",
+  xlab = "Time of Test",
+  ylab = "Average Score",
+  ylim = c(10, 20),
+  xlim = c(.5, 2.5),
+  axes = FALSE
+)
+
+axis(2, at = c(10, 12, 14, 16, 18,20), cex.axis = 1.25,
+      las = 2)
+axis(1, at = c(1, 2), labels = c("Pre", "Post"), cex.axis = 1.25)
+```
+
+Then a legend to know what each color means
+
+```{r}
+plot(
+  x = c(1, 1, 2, 2),
+  y = c(PreVM_f, PreVM_m, PostVM_f, PostVM_m),
+  type = "p",
+  col = c("Green", "Blue", "Green", "Blue"),
+  main = "Vocab Scores",
+  xlab = "Time of Test",
+  ylab = "Average Score",
+  ylim = c(10, 20),
+  xlim = c(.5, 2.5),
+  axes = FALSE
+)
+
+axis(2, at = c(10, 12, 14, 16, 18,20), cex.axis = 1.25,
+      las = 2)
+axis(1, at = c(1, 2), labels = c("Pre", "Post"), cex.axis = 1.25)
+
+legend(
+   .5,
+   18,
+   legend = c("females", "males"),
+   col = c("Green","Blue"),
+   lty = c(1),
+   lwd = c(2),
+   bty = 'n',
+   cex = 1.25
+ )
+```
+
+Now let's add lines to show things a bit more clearly:
+
+```{r}
+plot(
+  x = c(1, 1, 2, 2),
+  y = c(PreVM_f, PreVM_m, PostVM_f, PostVM_m),
+  type = "p",
+  col = c("Green", "Blue", "Green", "Blue"),
+  main = "Vocab Scores",
+  xlab = "Time of Test",
+  ylab = "Average Score",
+  ylim = c(10, 20),
+  xlim = c(.5, 2.5),
+  axes = FALSE
+)
+
+axis(2, at = c(10, 12, 14, 16, 18,20), cex.axis = 1.25,
+      las = 2)
+axis(1, at = c(1, 2), labels = c("Pre", "Post"), cex.axis = 1.25)
+
+legend(
+   .5,
+   18,
+   legend = c("females", "males"),
+   col = c("Green","Blue"),
+   lty = c(1),
+   lwd = c(2),
+   bty = 'n',
+   cex = 1.25
+ )
+
+lines(x = c(1,2), y = c(PreVM_f,PostVM_f), col = "Green")
+lines(x = c(1,2), y = c(PreVM_m,PostVM_m), col = "Blue")
+```
+
+
+### How to save plots
+
+Let's say we want to save the plot, what do??? Easiest way is to use the R-Studio Viewer or to right-click the image and save. 
+
+But here's a more manual way:
+
+We re-run the code for the previous graph, but we add something extra before and after the code:
+
+```{r}
+# Start a png file to add a plot
+png(filename = "../fig/PreVocabScores.png",
+    width = 500, height = 500,
+    units = "px", # px for pixels
+    bg = 'transparent')
+
+plot(
+  x = c(1, 1, 2, 2),
+  y = c(PreVM_f, PreVM_m, PostVM_f, PostVM_m),
+  type = "p",
+  col = c("Green", "Blue", "Green", "Blue"),
+  main = "Vocab Scores",
+  xlab = "Time of Test",
+  ylab = "Average Score",
+  ylim = c(10, 20),
+  xlim = c(.5, 2.5),
+  axes = FALSE
+)
+
+axis(2, at = c(10, 12, 14, 16, 18,20), cex.axis = 1.25,
+      las = 2)
+axis(1, at = c(1, 2), labels = c("Pre", "Post"), cex.axis = 1.25)
+
+legend(
+   .5,
+   18,
+   legend = c("females", "males"),
+   col = c("Green","Blue"),
+   lty = c(1),
+   lwd = c(2),
+   bty = 'n',
+   cex = 1.25
+ )
+
+lines(x = c(1,2), y = c(PreVM_f,PostVM_f), col = "Green")
+lines(x = c(1,2), y = c(PreVM_m,PostVM_m), col = "Blue")
+
+# Say that we're done with the file
+dev.off() 
+```
+
+## Etc
+
+### How to remove columns
+
+What if we want to remove column 1 for some reason?
+
+We can do this:
+
+```{r}
+dataL[,c(-1)]
+```
+
+### How to save files
+
+What about saving it as a new file?
+
+```{r}
+write.csv(dataL[, c(-1)], file = "../data/NewFileWithoutColumn1.csv",
+          quote = FALSE, row.names = FALSE)
+```
+
+`quote = FALSE` and `row.names = FALSE` makes things cleaner when it's exported to a csv.
+
+
+### ggplot2 and Modern Plots
+
+Now-a-days most people make graphs using `ggplot2`, but we won't talk about that here. Here's a sneak-peek of what that would look like
 
 ```{r, error = TRUE}
 library(ggplot2)
@@ -470,55 +679,3 @@ ggpairs(subset(dataL, select=-c(Student.ID)), mapping = aes(color = Gender,
         progress = FALSE) + 
   theme_bw()
 ```
-
-## Saving Plots
-
-Let's say we want to save the plot, what do??? Easiest way is to use the R-Studio Viewer or to right-click the image and save. 
-
-But here's a more manual way:
-
-We re-run the code for the graph, but we add something extra before and after the code:
-
-```{r}
-# Start a png file to add a plot
-png(filename = "../fig/PreVocabScores.png",
-    width = 500, height = 500,
-    units = "px", # px for pixels
-    bg = 'transparent')
-
-hist(
-  dataL$PreVocab[dataL$Gender == 2],
-  col = "Blue",
-  xlim = c(0, 20),
-  ylim = c(0, 10),
-  main = "PreVocab Scores",
-  xlab = "Score"
-)
-
-hist(
-  dataL$PreVocab[dataL$Gender == 1],,
-  add = TRUE,
-  col = "Green"
-)
-
-dev.off() # Say that we're done with the file
-```
-
-## Other Things
-
-What if we want to remove column 1 for some reason?
-
-We can do this:
-
-```{r}
-dataL[,c(-1)]
-```
-
-What about saving it as a new file?
-
-```{r}
-write.csv(dataL[, c(-1)], file = "../data/NewFileWithoutColumn1.csv",
-          quote = FALSE, row.names = FALSE)
-```
-
-`quote = FALSE` and `row.names = FALSE` makes things cleaner when it's exported to a csv.
