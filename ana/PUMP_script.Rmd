@@ -2,7 +2,10 @@
 title: "Intro to R: PUMP"
 subtitle: "Based on an Earlier R script by Raphael Gastrock and Jennifer Ruttle"
 author: "Michael Truong and Raphael Gastrock"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 # R Studio and its GUI
